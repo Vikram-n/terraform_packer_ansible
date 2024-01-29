@@ -1,0 +1,52 @@
+---
+- name: Install and Configure Packages on Ubuntu
+  hosts: all
+  become: true  # Run tasks with sudo
+
+  tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install git
+      apt:
+        name: git
+        state: present
+
+    - name: Install SSM Agent
+      apt:
+        deb: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+      args:
+        update_cache: yes
+
+    - name: Start SSM Agent
+      service:
+        name: amazon-ssm-agent
+        state: started
+        enabled: yes
+
+    - name: Install CloudWatch Agent
+      apt:
+        deb: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+      args:
+        update_cache: yes
+
+    - name: Start CloudWatch Agent
+      command: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start"
+
+    - name: Check CloudWatch Agent status
+      command: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status"
+
+    - name: Install AWS Inspector
+      shell: "curl -O https://inspector-agent.amazonaws.com/linux/latest/install && sudo bash install"
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
