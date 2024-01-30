@@ -1,35 +1,46 @@
 ---
-- name: Install and Configure Packages on Ubuntu
-  hosts: all
-  become: true  # Run tasks with sudo
+- name: Install AWS CloudWatch, SSM Agent, AWS Inspector, and Docker
+  hosts: your_target_group
+  become: true  # Run tasks as sudo
 
   tasks:
     - name: Update package cache
       apt:
         update_cache: yes
 
-    - name: Install CloudWatch Agent
+    - name: Install required packages
       apt:
-        deb: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-      args:
-        update_cache: yes
-
-    - name: Start CloudWatch Agent
-      command: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start"
-
-    - name: Check CloudWatch Agent status
-      command: "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status"
-
-    - name: Install AWS Inspector
-      shell: "curl -O https://inspector-agent.amazonaws.com/linux/latest/install && sudo bash install"
-
-    - name: Install Docker
-      apt:
-        name: docker.io
+        name: "{{ item }}"
         state: present
+      with_items:
+        - docker.io
+        - unzip
 
-    - name: Start Docker service
+    - name: Install AWS CloudWatch Agent
+      shell: |
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+        dpkg -i amazon-cloudwatch-agent.deb
+      args:
+        creates: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent
+
+    - name: Install AWS SSM Agent
+      shell: |
+        wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+        dpkg -i amazon-ssm-agent.deb
+      args:
+        creates: /usr/bin/amazon-ssm-agent
+
+    - name: Install AWS Inspector Agent
+      shell: |
+        curl -O https://inspector-agent.amazonaws.com/linux/latest/install
+        bash install
+      args:
+        creates: /opt/aws/awsagent
+
+    - name: Start Docker Service
       service:
         name: docker
         state: started
         enabled: yes
+
+    
