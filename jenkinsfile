@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Vikram-n/terraform_packer_ansible.git'
+            }
+        }
+        stage('packer build ami') {
+            steps {
+                sh "packer init aws_-ami-v1.pkr.hcl"
+                sh "packer fmt aws_-ami-v1.pkr.hcl"
+                sh "packer build aws_-ami-v1.pkr.hcl"
+            }
+        }
+      
+    }
+}
