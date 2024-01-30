@@ -8,23 +8,6 @@
       apt:
         update_cache: yes
 
-    - name: Install git
-      apt:
-        name: git
-        state: present
-
-    - name: Install SSM Agent
-      apt:
-        deb: https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-      args:
-        update_cache: yes
-
-    - name: Start SSM Agent
-      service:
-        name: amazon-ssm-agent
-        state: started
-        enabled: yes
-
     - name: Install CloudWatch Agent
       apt:
         deb: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
