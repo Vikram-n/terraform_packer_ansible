@@ -22,7 +22,7 @@ source "amazon-ebs" "ubuntu" {
   region        = "us-east-1"
   source_ami    = "ami-0c7217cdde317cfec"
   ssh_username = "ubuntu"
-  ami_name = "ami-version-v1{{timestamp}}"
+  
 }
 
 build {
