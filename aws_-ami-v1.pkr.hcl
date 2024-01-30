@@ -20,16 +20,9 @@ source "amazon-ebs" "ubuntu" {
   ami_name      = "ubuntu-aws"
   instance_type = "t2.micro"
   region        = "us-east-1"
-  source_ami_filter {
-    filters = {
-      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
-    most_recent = true
-    owners      = ["457549513090"]
-  }
+  source_ami    = "ami-0c7217cdde317cfec"
   ssh_username = "ubuntu"
+  ami_name = "ami-version-v1{{timestamp}}"
 }
 
 build {
